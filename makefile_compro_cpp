@@ -1,0 +1,28 @@
+# Copy or link this makefile into source code directory
+CXX         := g++
+TARGET      := main
+CXXFLAGS    += -std=c++14
+
+buildtype :=
+
+ifeq ($(buildtype),release)
+	CXXFLAGS += -s -O2
+else
+	CXXFLAGS += -DEBUG -W -Wall -Wextra -Wfloat-equal -Wundef -fsanitize=undefined -g3
+	LDFLAGS += -ubsan
+endif
+
+.PHONY: run
+run: $(TARGET).out
+	./$?
+
+.PHONY: build
+build: $(TARGET).out
+
+
+$(TARGET).out: $(TARGET).cpp
+	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
+
+.PHONY: clean
+clean:
+	rm -f $(TARGET).out

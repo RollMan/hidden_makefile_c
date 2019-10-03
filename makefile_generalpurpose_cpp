@@ -1,0 +1,41 @@
+CXX         := g++
+TARGET      := src/main
+INCLUDE     :=
+LIB         :=
+CXXFLAGS    += -std=c++14 $(INCLUDE)
+LDFLAGS     += $(LIB)
+
+SRC         := $(TARGET).cpp
+OBJS        := $(SRC:%.cpp=%.o)
+
+ifeq ($(buildtype),release)
+	CXXFLAGS += -O2 -s
+else
+	CXXFLAGS += -W -Wall -Wextra -Wfloat-equal -Wundef -fsanitize=undefined -g3
+	LDFLAGS += -lubsan
+endif
+
+##############################
+# phonies
+##############################
+
+.PHONY: build
+build: $(TARGET).out
+
+.PHONY: run
+run: $(TARGET).out
+	./$(TARGET).out
+
+.PHONY: clean
+clean:
+	rm -f $(OBJS) $(TARGET).out
+
+##############################
+# C build rules
+##############################
+.cpp.o:
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+$(TARGET).out: $(OBJS)
+	$(CXX) -o $@ $^ $(LDFLAGS)
+
